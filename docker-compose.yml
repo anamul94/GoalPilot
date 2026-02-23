@@ -1,0 +1,35 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: goalpilot_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: goalpilot
+      POSTGRES_PASSWORD: goalpilot_secret
+      POSTGRES_DB: goalpilot_db
+    ports:
+      - "5434:5432"
+    volumes:
+      - goalpilot_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U goalpilot -d goalpilot_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build: .
+    container_name: goalpilot_app
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://goalpilot:goalpilot_secret@postgres:5432/goalpilot_db
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY:-your-super-secret-key-change-in-production}
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  goalpilot_pgdata:
+    driver: local
