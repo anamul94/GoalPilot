@@ -78,7 +78,7 @@ docker-logs: ## Show logs from Docker containers
 	docker compose logs -f
 
 docker-migrate: ## Run migrations inside the app container
-	docker compose exec app alembic upgrade head
+	docker compose exec -w /app app alembic upgrade head
 	@echo "✅  Migrations applied in Docker"
 
 # ──────────────────────────────────────
