@@ -1,5 +1,9 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
+import os
+
 from app.config import get_settings
 from app.routers import auth, categories, goals, milestones, tasks, checklists, analytics, notifications
 
@@ -21,6 +25,29 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Static files
+static_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "static")
+if os.path.exists(static_path):
+    app.mount("/static", StaticFiles(directory=static_path), name="static")
+
+
+@app.get("/favicon.ico", include_in_schema=False)
+async def favicon():
+    file_path = os.path.join(static_path, "favicon.ico")
+    if os.path.exists(file_path):
+        return FileResponse(file_path)
+    return {"detail": "Not Found"}
+
+
+@app.get("/apple-touch-icon.png", include_in_schema=False)
+@app.get("/apple-touch-icon-precomposed.png", include_in_schema=False)
+async def apple_touch_icon():
+    file_path = os.path.join(static_path, "apple-touch-icon.png")
+    if os.path.exists(file_path):
+        return FileResponse(file_path)
+    return {"detail": "Not Found"}
+
 
 # Register routers
 app.include_router(auth.router)
