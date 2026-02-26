@@ -8,7 +8,7 @@ services:
       POSTGRES_PASSWORD: goalpilot_secret
       POSTGRES_DB: goalpilot_db
     ports:
-      - "5434:5432"
+      - "5430:5432"
     volumes:
       - goalpilot_pgdata:/var/lib/postgresql/data
     healthcheck:
@@ -22,11 +22,10 @@ services:
     container_name: goalpilot_app
     restart: unless-stopped
     ports:
-      - "8000:8000"
+      - "8015:8000"
     environment:
       - DATABASE_URL=postgresql+asyncpg://goalpilot:goalpilot_secret@postgres:5432/goalpilot_db
       - JWT_SECRET_KEY=${JWT_SECRET_KEY:-your-super-secret-key-change-in-production}
-      - JWT_SECRET_KEY
       - JWT_ALGORITHM=HS256
       - JWT_ACCESS_TOKEN_EXPIRE_MINUTES=3000
       - REFRESH_TOKEN_EXPIRE_DAYS=60
