@@ -31,6 +31,7 @@ class GoalResponse(BaseModel):
     start_date: datetime | None
     end_date: datetime | None
     status: GoalStatus
+    is_active: bool
     progress: float
     created_at: datetime
     updated_at: datetime
@@ -41,6 +42,28 @@ class GoalResponse(BaseModel):
 class GoalDetailResponse(GoalResponse):
     milestones: list["MilestoneResponse"] = []
 
+
+
+
+class ActiveGoalTaskSummary(BaseModel):
+    task_id: str
+    title: str
+
+
+class ActiveGoalMilestoneSummary(BaseModel):
+    milestone_id: str
+    title: str
+    task_count: int
+    tasks: list[ActiveGoalTaskSummary] = []
+
+
+class ActiveGoalSummary(BaseModel):
+    goal_id: str
+    title: str
+    description: str | None
+    is_active: bool
+    milestone_count: int
+    milestones: list[ActiveGoalMilestoneSummary] = []
 
 # Avoid circular import
 from app.schemas.milestone import MilestoneResponse  # noqa: E402
